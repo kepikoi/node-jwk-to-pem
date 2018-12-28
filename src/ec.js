@@ -29,12 +29,14 @@ var ECPrivateKey = asn1.define('ECPrivateKey', /* @this */ function() {
 
 var curves = {
 	'P-256': 'p256',
+	'P-256K': 'secp256k1',
 	'P-384': 'p384',
 	'P-521': 'p521'
 };
 
 var oids = {
 	'P-256': [1, 2, 840, 10045, 3, 1, 7],
+	'P-256K': [1, 3, 132, 0, 10],
 	'P-384': [1, 3, 132, 0, 34],
 	'P-521': [1, 3, 132, 0, 35]
 };

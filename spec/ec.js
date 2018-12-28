@@ -82,6 +82,16 @@ describe('ecdsa', function() {
 			expect(alg.verify(input, alg.sign(input, priv), pub)).to.be.true;
 		});
 	});
+	
+	describe("P-256K", function () {
+		it("should convert a public JWK to a public PEM", function () {
+			var jwk = {};
+			
+			var expected = "";
+			
+			expect(jwkToPem(jwk)).to.equal(expected);
+		});
+	});
 
 	describe('P-384', function() {
 		it('should convert a public JWK to a public PEM', function() {

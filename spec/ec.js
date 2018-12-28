@@ -85,13 +85,74 @@ describe('ecdsa', function() {
 	
 	describe("P-256K", function () {
 		it("should convert a public JWK to a public PEM", function () {
-			var jwk = {};
+			var jwk = {
+				"kty": "EC",
+				"crv": "P-256K",
+				"x": "X2BzYINMZynokHQjRlvLQfth8WBMnr9dal50e3Qbcvg",
+				"y": "CMPiGuTfbesZCzDPJDOkiOf8LuExhVybOQO7NT3QKBQ",
+			};
 			
-			var expected = "";
+			var expected = "-----BEGIN PUBLIC KEY-----\n" +
+				"MFYwEAYHKoZIzj0CAQYFK4EEAAoDQgAEX2BzYINMZynokHQjRlvLQfth8WBMnr9d\n" +
+				"al50e3QbcvgIw+Ia5N9t6xkLMM8kM6SI5/wu4TGFXJs5A7s1PdAoFA==\n" +
+				"-----END PUBLIC KEY-----\n";
 			
 			expect(jwkToPem(jwk)).to.equal(expected);
 		});
-	});
+		
+		it("should convert a private JWK to a public PEM", function () {
+			var jwk = {
+				"kty": "EC",
+				"crv": "P-256K",
+				"d": "alyD1/zN+8NtWVg7Dtazh+FNF3N/0oPj4K1+ewq/y20"
+			};
+			
+			var expected =
+				"-----BEGIN PUBLIC KEY-----\n" +
+				"MFYwEAYHKoZIzj0CAQYFK4EEAAoDQgAEFsGLkihe1YAaPeoVWMEOkyrzk35pENuK\n" +
+				"t2vqPM5PZrjZie9w3dq0uD+OgLzRFPn3CjRW/FrPs0poFVly/iZozw==\n" +
+				"-----END PUBLIC KEY-----\n"
+			;
+			
+			expect(jwkToPem(jwk)).to.equal(expected);
+		});
+		
+		it("should convert a private JWK to a private PEM when private option is specified", function () {
+			var jwk = {
+				"kty": "EC",
+				"crv": "P-256K",
+				"d": "wPO6GHIoD8ZD-dnRivlcN0vUwEJ0j9S9CBneTqBknr0"
+			};
+			
+			var expected =
+				"-----BEGIN PRIVATE KEY-----\n" +
+				"MIGNAgEAMBAGByqGSM49AgEGBSuBBAAKBHYwdAIBAQQgwPO6GHIoD8ZD+dnRivlc\n" +
+				"N0vUwEJ0j9S9CBneTqBknr2gBwYFK4EEAAqhRANCAAQiM4nXv6gKZEWj57EZwwyt\n" +
+				"nbhiiNjUWzvDucNQG+1Swyhl7fvS2G492jSeWU/CbTCTku2NneZeqALZeOXDAxOb\n" +
+				"-----END PRIVATE KEY-----\n"
+			;
+			
+			expect(jwkToPem(jwk, { private: true })).to.equal(expected);
+		});
+		
+		it("should round-trip sign/verify with public and private keys", function () {
+			var jwk = {
+				kty: "EC",
+				crv: "P-256K",
+				d: "DA87oYcigPxkP52dGK+Vw3S9TAQnSP1L0IGd5OoGSesN"
+			};
+			
+			var priv = jwkToPem(jwk, { private: true }),
+				pub = jwkToPem(jwk);
+			
+			var alg = jwa("es256"),
+				input = Buffer.from("stuff n' things", "utf8");
+			
+			expect(alg.verify(input, alg.sign(input, priv), pub)).to.be.true;
+			
+		});
+		
+	})
 
 	describe('P-384', function() {
 		it('should convert a public JWK to a public PEM', function() {
